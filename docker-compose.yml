@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lumen-app
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "9000:9000"
+    depends_on:
+      - db
+    networks:
+      - lumen-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: react-app-image
+    container_name: react-app
+    restart: unless-stopped
+    working_dir: /usr/src/app
+    volumes:
+      - ./react-app:/usr/src/app
+    networks:
+      - lumen-network
+    ports:
+      - "3000:3000"
+
+networks:
+  lumen-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
