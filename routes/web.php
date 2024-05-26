@@ -22,14 +22,14 @@ $router->group(['prefix' => 'v1/api'], function () use ($router) {
     $router->group(['middleware' => 'auth'], function () use ($router) {
         $router->get('/me', 'AuthController@me');
 
-        $router->get('/users', 'UserController@index');
+        $router->get('/users/hot', 'UserController@index');
         $router->get('/users', 'UserController@create');
         $router->get('/users/{id}', 'UserController@edit');
         $router->post('/users', 'UserController@store');
         $router->put('/users/{id}', 'UserController@update');
         $router->delete('/users/{id}', 'UserController@destroy');
 
-        $router->get('/roles', 'RolesController@index');
+        $router->get('/roles/hot', 'RolesController@index');
         $router->get('/roles', 'RolesController@create');
         $router->get('/roles/{id}', 'RolesController@edit');
         $router->post('/roles', 'RolesController@store');

@@ -37,6 +37,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'username',
         'nickname',
         'email',
+        'bio',
+        'roles_id',
+        'password'
     ];
 
     /**

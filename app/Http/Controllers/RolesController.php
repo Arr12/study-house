@@ -31,11 +31,11 @@ class RolesController extends Controller
         if ($request->search) {
             $pageNumber = $request->pageNumber;
             $search = $request->search;
-            $role = Cache::remember('expensive_user_result_' . md5($search . '_' . ($pageNumber ?: 1)), env('DATA_CACHED', 5 * 60), function () use ($role, $pageNumber, $search) {
+            $role = Cache::remember('expensive_roles_result_' . md5($search . '_' . ($pageNumber ?: 1)), env('DATA_CACHED', 5 * 60), function () use ($role, $pageNumber, $search) {
                 return $role->where('name', 'like', '%' . $search . '%')->where('status', 'active')->paginate(10, ['*'], 'page', $pageNumber ?: 1);
             });
         } else {
-            $role = Cache::remember('expensive_user_result', env('DATA_CACHED', 5 * 60), function () {
+            $role = Cache::remember('expensive_roles_result', env('DATA_CACHED', 5 * 60), function () {
                 return Role::where('status', 'active')->paginate(10);
             });
         }

@@ -6,6 +6,7 @@ use App\Helpers\FileHelpers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -32,7 +33,6 @@ class UserController extends Controller
             $pageNumber = $request->pageNumber;
             $search = $request->search;
             $pageSize = $request->pageSize;
-            Cache::forget('expensive_user_result_' . md5($search . '_' . ($pageNumber ?: 1)));
             $user = Cache::remember('expensive_user_result_' . md5($search . '_' . ($pageNumber ?: 1)), env('DATA_CACHED', 5 * 60), function () use ($user, $pageNumber, $pageSize, $search) {
                 return $user->with('getRoles')->where('nickname', 'like', '%' . $search . '%')->where('status', 'active')->paginate($pageSize, ['*'], 'page', $pageNumber ?: 1);
             });
@@ -41,7 +41,6 @@ class UserController extends Controller
                 return User::with('getRoles')->where('status', 'active')->paginate(10);
             });
         }
-
         return response()->json($user);
     }
 
@@ -58,7 +57,6 @@ class UserController extends Controller
             'nickname' => 'required',
             'email' => 'required',
         ]);
-
         try {
             $thumbnails = [];
 
@@ -79,10 +77,14 @@ class UserController extends Controller
                 }
             }
 
+            $password = Hash::make($request->password);
+
             User::create([
-                'username' => $request->name,
+                'username' => $request->username,
                 'nickname' => $request->nickname,
                 'email' => $request->email,
+                'password' => $password,
+                'roles_id' => $request->roles,
                 'thumbnails' => json_encode($thumbnails),
                 'bio' => $request->bio
             ]);
